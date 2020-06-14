@@ -23,3 +23,7 @@ Usage of go-shellmarks:
   -shell
     	add this to your .bashrc: source <(go-shellmarks -shell)
 ```
+
+## License
+
+MIT
