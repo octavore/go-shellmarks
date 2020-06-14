@@ -12,16 +12,16 @@ source <(go-shellmarks -shell)
 
 ## Usage
 
+`go-shellmarks -shell` needs to be sourced when your shell initializes (see
+Installation above). This registers a `g` command in your shell, with the
+following flags:
+
 ```
-Usage of go-shellmarks:
-  -a string
-    	add a new bookmark to the current folder
-  -d string
-    	delete a bookmark
-  -l	list bookmarks
-  -h	show help
-  -shell
-    	add this to your .bashrc: source <(go-shellmarks -shell)
+g <bookmark>       jumps to <bookmark>
+g -a <bookmark>    add a new bookmark to the current folder
+g -d <bookmark>    delete a bookmark
+g -l               list bookmarks
+g -h               show help
 ```
 
 ## License
