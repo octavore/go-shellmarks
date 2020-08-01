@@ -1,6 +1,13 @@
 package main
 
-import "sort"
+import (
+	"fmt"
+	"os"
+	"sort"
+
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/fatih/color"
+)
 
 type Bookmark struct {
 	Key  string `json:"key"`
@@ -43,14 +50,51 @@ func (c *Config) Remove(key string) {
 	c.Bookmarks = updated
 }
 
-func (c *Config) Print() {
-	if len(c.Bookmarks) == 0 {
-		errOut("(no bookmarks; add the current directory with `g -a`)")
+func (c *Config) Select() (string, error) {
+	bookmarks, err := c.sorted()
+	if err != nil {
+		return "", err
 	}
-	sort.Slice(c.Bookmarks, func(i, j int) bool {
-		return c.Bookmarks[i].Key < c.Bookmarks[j].Key
+	bold := color.New(color.FgYellow, color.Bold)
+	bold.EnableColor()
+	prompt := &survey.Select{Message: "Choose a shortcut"}
+	m := map[string]string{}
+	for _, b := range bookmarks {
+		l := fmt.Sprintf("%s %s", bold.Sprintf("%-12s", b.Key), b.Path)
+		m[l] = b.Path
+		prompt.Options = append(prompt.Options, l)
+	}
+	opt := ""
+	err = survey.AskOne(prompt, &opt, survey.WithStdio(os.Stdin, os.Stderr, os.Stderr))
+	if err != nil {
+		return "", err
+	}
+	if opt == "" {
+		errOut("nothing selected")
+	}
+	return m[opt], nil
+}
+
+func (c *Config) Print() error {
+	bold := color.New(color.FgYellow, color.Bold)
+	bold.EnableColor()
+	bookmarks, err := c.sorted()
+	if err != nil {
+		return err
+	}
+	for _, b := range bookmarks {
+		errOut("%s %s", bold.Sprintf("%-12s", b.Key), b.Path)
+	}
+	return nil
+}
+
+func (c *Config) sorted() ([]*Bookmark, error) {
+	bookmarks := c.Bookmarks
+	if len(bookmarks) == 0 {
+		return nil, fmt.Errorf("(no bookmarks; add the current directory with `g -a`)")
+	}
+	sort.Slice(bookmarks, func(i, j int) bool {
+		return bookmarks[i].Key < bookmarks[j].Key
 	})
-	for _, b := range c.Bookmarks {
-		errOut("%-12s %s", b.Key, b.Path)
-	}
+	return bookmarks, nil
 }
