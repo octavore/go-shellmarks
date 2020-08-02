@@ -25,3 +25,9 @@ z @rm          remove a stored bookmark
 ## License
 
 MIT
+
+## Credits
+
+- https://github.com/huyng/bashmarks
+- https://github.com/rupa/z
+- https://github.com/wting/autojump
