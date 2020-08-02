@@ -5,24 +5,8 @@ import (
 	"os"
 )
 
-const appName = "go-shellmarks"
-
-const bashFuncTmpl = `function %s {
-	target="$(SHELLMARKS_ALIAS=%s %s $*)"
-	[[ $? != 0 ]] && return
-	if [ -z "$target" ]; then
-		return
-	elif [ -d "$target" ]; then
-		echo cd $target
-		cd "$target"
-	else
-		echo target "$target" does not exist
-	fi
-}
-`
-
 func main() {
-	Commands()
+	runCommands()
 }
 
 func exitIfError(err error) {

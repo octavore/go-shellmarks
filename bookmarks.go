@@ -6,6 +6,7 @@ import (
 	"sort"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/core"
 	"github.com/fatih/color"
 )
 
@@ -57,22 +58,34 @@ func (c *Config) Select() (string, error) {
 	}
 	bold := color.New(color.FgYellow, color.Bold)
 	bold.EnableColor()
-	prompt := &survey.Select{Message: "Choose a shortcut"}
-	m := map[string]string{}
-	for _, b := range bookmarks {
-		l := fmt.Sprintf("%s %s", bold.Sprintf("%-12s", b.Key), b.Path)
-		m[l] = b.Path
-		prompt.Options = append(prompt.Options, l)
+
+	// create question
+	q := &survey.Question{
+		Prompt: &survey.Select{Message: "Choose a shortcut"},
+		Transform: func(s interface{}) interface{} {
+			ans := s.(core.OptionAnswer)
+			return core.OptionAnswer{
+				Index: ans.Index,
+				Value: bookmarks[ans.Index].Path,
+			}
+		},
 	}
+	for _, b := range bookmarks {
+		o := q.Prompt.(*survey.Select).Options
+		o = append(o, fmt.Sprintf("%s %s", bold.Sprintf("%-12s", b.Key), b.Path))
+		q.Prompt.(*survey.Select).Options = o
+	}
+
+	// run select
 	opt := ""
-	err = survey.AskOne(prompt, &opt, survey.WithStdio(os.Stdin, os.Stderr, os.Stderr))
+	err = survey.Ask([]*survey.Question{q}, &opt, survey.WithStdio(os.Stdin, os.Stderr, os.Stderr))
 	if err != nil {
 		return "", err
 	}
 	if opt == "" {
 		errOut("nothing selected")
 	}
-	return m[opt], nil
+	return opt, nil
 }
 
 func (c *Config) Print() error {
