@@ -2,26 +2,24 @@
 
 A quick way to jump around in your shell
 
-## Installation
+## Setup
 
-Add this to your `~/.bashrc` file:
+Required. Add this to your .bashrc to use go-shellmarks as `z`:
 
-```bash
-source <(go-shellmarks -shell)
+```shell
+source <(go-shellmarks @shell --alias z)
 ```
+
+This change will take effect when you relaunch your terminal.
 
 ## Usage
 
-`go-shellmarks -shell` needs to be sourced when your shell initializes (see
-Installation above). This registers a `g` command in your shell, with the
-following flags:
-
 ```
-g <bookmark>       jumps to <bookmark>
-g -a <bookmark>    add a new bookmark to the current folder
-g -d <bookmark>    delete a bookmark
-g -l               list bookmarks
-g -h               show help
+z <bookmark>   jumps to <bookmark>
+z @add         bookmark the current directory as <bookmark>
+z @get         show stored value for <bookmark>
+z @ls          list all bookmarks
+z @rm          remove a stored bookmark
 ```
 
 ## License
